@@ -1,0 +1,39 @@
+body {
+  font-family: Arial, sans-serif;
+  background-image: url(https://i.gifer.com/origin/e4/e43f877023f663c68b0180cf35abc23f_w200.webp);
+}
+
+h1 {
+  color: white;
+  text-align: center;
+}
+
+#contactList {
+  list-style: none;
+  padding: 0;
+  color: aliceblue;
+}
+
+.contact {
+  border: 1px solid white;
+  margin: 10px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.contact img {
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+#addContactForm {
+  margin-top: 20px;
+  color: white;
+  text-align: center;
+}
+img {
+  width: 150px;
+  height: 150px;
+  background-image: none;
+}
