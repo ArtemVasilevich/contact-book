@@ -12,81 +12,86 @@
 //   },
 // ];
 
+// ! ====================================================================================================================================================================
+
 let btn = document.querySelector("#btn");
 let name = document.querySelector("#name");
 let phone = document.querySelector("#phone");
 let img = document.querySelector("#image");
+let contactList = document.querySelector("#contactList");
 
 let contacts = JSON.parse(localStorage.getItem("contacts-data")) || [];
 
 btn.addEventListener("click", () => {
-  let contact = {
-    name: name.value,
-    phone: phone.value,
-    img: img.value,
-  };
+  let nameValue = name.value.trim();
+  let phoneValue = phone.value.trim();
+  let imgValue = img.value.trim();
+
+  if (!nameValue || !phoneValue) {
+    alert("Заполните все поля");
+    return;
+  }
+
+  let contact = { name: nameValue, phone: phoneValue };
+
+  // if (imgValue) {
+  //   contact.image = imgValue;
+  // }
+
+  contact.image = imgValue
+    ? imgValue
+    : "https://avatars.mds.yandex.net/i?id=61cbab5f39c2ec39445472a274734088f1e6ab4b-9151370-images-thumbs&n=13"; //"https://instalook.ru/uploads/dakimakura/mr-freeman-2912.jpg";
 
   contacts.push(contact);
-
+  displayContacts();
   setItemToStorage(contacts);
-  console.log(name.value, phone.value);
-  if (!name.value.trim() && !phone.value.trim()) alert("Заполните поля!");
-  return;
+
+  //  ==================================================================
+
+  name.value = "";
+  phone.value = "";
+  img.value = "";
 });
 
 function setItemToStorage(contacts) {
   localStorage.setItem("contacts-data", JSON.stringify(contacts));
-  console.log(contacts);
 }
 
-// !==============================================================================
-
 function displayContacts() {
-  let contactList = document.getElementById("contactList");
   contactList.innerHTML = "";
 
   contacts.forEach(function (contact) {
     let li = document.createElement("li");
     li.className = "contact";
 
-    let img = document.createElement("img");
-    img.src = contact.image;
-    img.alt = contact.name;
+    let imgElement = document.createElement("img");
+    imgElement.src = contact.image || "placeholder-image.png";
+    imgElement.alt = contact.name;
 
     let div = document.createElement("div");
-    div.innerHTML = "<h3>" + contact.name + "</h3><p>" + contact.phone + "</p>";
+    div.textContent = contact.name;
+    let p = document.createElement("p");
+    p.textContent = contact.phone;
+    div.appendChild(p);
 
     let deleteButton = document.createElement("button");
     deleteButton.textContent = "Delete";
     deleteButton.onclick = function () {
       deleteContact(contact);
     };
+    let editButton = document.createElement("button");
+    editButton.textContent = "Edit";
+    editButton.onclick = function () {
+      editContact(contact);
+    };
 
-    li.appendChild(img);
+    li.appendChild(imgElement);
     li.appendChild(div);
     li.appendChild(deleteButton);
+    li.appendChild(editButton);
 
     contactList.appendChild(li);
   });
-}
-
-function addContact() {
-  let name = document.getElementById("name").value;
-  let phone = document.getElementById("phone").value;
-  let image = document.getElementById("image").value;
-
-  if (name && phone && image) {
-    contacts.push({ name: name, phone: phone, image: image });
-    displayContacts();
-    setItemToStorage(Object);
-  } else if (name && phone) {
-    contacts.push({ name: name, phone: phone });
-    displayContacts();
-    setItemToStorage(Object);
-  } else {
-    alert("Заполните все поля");
-    return;
-  }
 }
 
 function deleteContact(contact) {
@@ -94,20 +99,55 @@ function deleteContact(contact) {
   if (index !== -1) {
     contacts.splice(index, 1);
     displayContacts();
+    setItemToStorage(contacts);
   }
 }
 
-displayContacts();
+let editContainer = document.getElementById("editContainer");
+let editNameInput = document.getElementById("editName");
+let editPhoneInput = document.getElementById("editPhone");
+let editImageInput = document.getElementById("editImage");
 
-// const API = "http://localhost:8000";
-// fetch(API)
-//   .then((res) => {
-//     return res.json();
-//   })
-//   .then((data) => {
-//     data.Search.forEach((elem) => {
-//       info.innerHTML += `
-//
-//        `;
-//     });
-// });
+// !=============================================================
+
+function editContact(contact) {
+  editNameInput.value = contact.name;
+  editPhoneInput.value = contact.phone;
+  editImageInput.value = contact.image || "";
+
+  editContainer.style.display = "block";
+
+  selectedContactIndex = contacts.indexOf(contact);
+}
+
+function saveEditedContact() {
+  let editedName = editNameInput.value.trim();
+  let editedPhone = editPhoneInput.value.trim();
+  let editedImage = editImageInput.value.trim();
+
+  if (!editedName || !editedPhone) {
+    alert("Внесите изменения!");
+    return;
+  }
+
+  contacts[selectedContactIndex].name = editedName;
+  contacts[selectedContactIndex].phone = editedPhone;
+  contacts[selectedContactIndex].image = editedImage || null;
+
+  editContainer.style.display = "none";
+
+  displayContacts();
+
+  setItemToStorage(contacts);
+}
+// !============================================================================
+// function editContact(contact) {
+//   let index = contacts.indexOf(contact);
+//   if (index !== -1) {
+//     contacts.splice(index, 1);
+//     displayContacts(setItemToStorage);
+//     setItemToStorage(contacts);
+//   }
+// }
+
+displayContacts();
